@@ -11,7 +11,7 @@
     "test": "mocha -r ts-node/register 'test/**/*.ts'",
     "lint": "eslint",
     "dev": "nodemon source/server.ts",
-    "start": "node source/server.ts"
+    "start": "ts-node source/server.ts"
   },
   "author": "gabrielaelisa",
   "license": "ISC",
