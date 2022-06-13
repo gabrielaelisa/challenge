@@ -16,5 +16,5 @@ export interface IDistanceDocument extends IDistance, Document {
 }
 
 export interface IDistanceModel extends Model<IDistanceDocument> {
-    
+    getDocuments: (pageNumber: number) => Promise<IDistance[]>;
 }
