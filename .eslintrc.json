@@ -15,5 +15,6 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "camelcase": [2, {"properties": "always"}]
     }
 }
