@@ -8,6 +8,6 @@ import haversine from 'haversine-distance'
  */
 export function calculateDistance(pointA: IPoint , pointB: IPoint) {
 
-    return (haversine(pointA, pointB)/1000).toFixed(2);
+    return haversine(pointA, pointB)/1000;
     
 }

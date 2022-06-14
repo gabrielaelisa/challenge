@@ -5,4 +5,6 @@ const router = express.Router();
 router.get('/heartbeat', controller.getHeartbeat);
 router.get('/address', controller.getAddress);
 router.get('/historic', controller.getHistoricAddresses);
+router.get('/historic-structured', controller.getAddressStructured);
+router.get('/distance', controller.postDistance);
 export = router;
