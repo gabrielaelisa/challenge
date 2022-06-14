@@ -3,7 +3,8 @@ import express, {Express} from 'express';
 import morgan from 'morgan';
 import routes from './routes/routes';
 import mongoose from 'mongoose';
-import cors from 'cors';
+
+const Cors = require("cors");
 
 const mongoString = process.env.DATABASE_URL || '';
 
@@ -20,7 +21,7 @@ database.once('connected', () => {
     console.log('Database Connected');
 })
 
-router.use(cors())
+router.use(Cors())
 router.use(morgan('dev'));
 router.use(express.urlencoded({ extended: false }));
 router.use(express.json());
