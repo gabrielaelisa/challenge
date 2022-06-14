@@ -25,7 +25,6 @@ const getAddressSchema = Joi.object({
     q: Joi.string().required()
 });
 
-
 /**
  * Gets adress info using Nominatim API
  * @param {Request} req The request
@@ -38,7 +37,6 @@ const getAddress = async(req: Request, res: Response, next: NextFunction) => {
     await getAddressSchema.validateAsync(req.query)
     const { q } = req.query;
     try{
-
         const result: AxiosResponse = await axios.get(
             `${nominatimURL}/search?format=json&q=${q}`);
         return res.status(200).json({
@@ -47,59 +45,7 @@ const getAddress = async(req: Request, res: Response, next: NextFunction) => {
     }
     catch(error){
         console.log(error);
-    }
-   
-}
-
-const getDistanceSchema = Joi.object({
-    origin: Joi.string().required(),
-    destination: Joi.string().required(),
-});
-
-
-/**
- * Gets the distance between two addresses, in kilometers
- * and saves in database
- * @param {Request} req The request
- * @param {Response} res The response object
- * @param {NextFunction} next 
- */
-const postDistance = async(req: Request, res: Response, next: NextFunction) => {
-    await getDistanceSchema.validateAsync(req.query)
-    const { origin, destination } = req.query;
-
-    console.log(origin);
-    try{
-        const originResult: AxiosResponse = await axios.get(
-            `${nominatimURL}/search?format=json&q=${origin}`);
-
-        const destinationResult: AxiosResponse = await axios.get(
-            `${nominatimURL}/search?format=json&q=${destination}`);
-
-        console.log(originResult.data);
-        const originPoint = { 
-            latitude: originResult.data[0].lat,
-            longitude: originResult.data[0].lon,
-        }
-        const destinationPoint = { 
-            latitude: destinationResult.data[0].lat,
-            longitude: destinationResult.data[0].lon,
-        }
-
-        const distance = calculateDistance(originPoint, destinationPoint);
-        
-        await Distance.create({
-            origin,
-            destination,
-            distance,
-        });
-
-        return res.status(200).json({
-            message: { distance }
-        })
-    }
-    catch(error){
-        return res.status(500).send({error :'Something went wrong' })
+        return res.status(400).send({error :'Address not found' })
     }
    
 }
@@ -132,7 +78,60 @@ const getAddressStructruedSchema = Joi.object({
     }
     catch(error){
         console.log(error);
+        return res.status(400).send({error :'Address not found' })
     }
+}
+
+
+const getDistanceSchema = Joi.object({
+    origin: Joi.string().required(),
+    destination: Joi.string().required(),
+});
+
+
+/**
+ * Gets the distance between two addresses, in kilometers
+ * and saves in database
+ * @param {Request} req The request
+ * @param {Response} res The response object
+ * @param {NextFunction} next 
+ */
+const postDistance = async(req: Request, res: Response, next: NextFunction) => {
+    await getDistanceSchema.validateAsync(req.body)
+    const { origin, destination } = req.body;
+
+    console.log(origin);
+    try{
+        const originResult: AxiosResponse = await axios.get(
+            `${nominatimURL}/search?format=json&q=${origin}`);
+
+        const destinationResult: AxiosResponse = await axios.get(
+            `${nominatimURL}/search?format=json&q=${destination}`);
+ 
+        const originPoint = { 
+            latitude: originResult.data[0].lat,
+            longitude: originResult.data[0].lon,
+        }
+        const destinationPoint = { 
+            latitude: destinationResult.data[0].lat,
+            longitude: destinationResult.data[0].lon,
+        }
+
+        const distance = calculateDistance(originPoint, destinationPoint);
+        
+        await Distance.create({
+            origin,
+            destination,
+            distance,
+        });
+
+        return res.status(200).json({
+            message: { distance }
+        })
+    }
+    catch(error){
+        return res.status(500).send({error :'Something went wrong' })
+    }  
 }
 
 const getHisoricalAddressesSchema = Joi.object({
@@ -146,8 +145,9 @@ const getHisoricalAddressesSchema = Joi.object({
  * @param {NextFunction} next 
  */
 const getHistoricAddresses= async(req: Request, res: Response, next: NextFunction) =>{
+    console.log(req.body);
     await getHisoricalAddressesSchema.validateAsync(req.query);
-    const { pageNumber } = req.query; 
+    const { pageNumber } = req.query;
     try{
        const documents = await Distance.getDocuments(1);
        console.log(documents)

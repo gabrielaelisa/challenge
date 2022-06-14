@@ -8,6 +8,7 @@
     "node": ">=14.17.5"
   },
   "scripts": {
+    "preinstall": "npm i --save-dev @types/cors",
     "test": "mocha -r ts-node/register 'test/**/*.ts'",
     "lint": "eslint",
     "dev": "nodemon source/server.ts",
