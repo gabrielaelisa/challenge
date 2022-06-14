@@ -22,7 +22,7 @@ const getHeartbeat = async(req: Request, res: Response, next: NextFunction) => {
 
 
 const getAddressSchema = Joi.object({
-    q: Joi.string().required()
+    q: Joi.string().required().max(100)
 });
 
 /**
@@ -34,7 +34,9 @@ const getAddressSchema = Joi.object({
  */
 
 const getAddress = async(req: Request, res: Response, next: NextFunction) => {
-    await getAddressSchema.validateAsync(req.query)
+    await getAddressSchema.validateAsync(req.query).catch((error)=>{
+        return res.status(400).send({error :'Invalid request query params' })
+    })
     const { q } = req.query;
     try{
         const result: AxiosResponse = await axios.get(
@@ -44,16 +46,16 @@ const getAddress = async(req: Request, res: Response, next: NextFunction) => {
         })
     }
     catch(error){
-        console.log(error);
+        //console.log(error);
         return res.status(400).send({error :'Address not found' })
     }
    
 }
 
 const getAddressStructruedSchema = Joi.object({
-    street: Joi.string().required(),
-    city: Joi.string().required(),
-    country: Joi.string().required(),
+    street: Joi.string().required().max(30),
+    city: Joi.string().required().max(30),
+    country: Joi.string().required().max(30),
 });
 
 /**
@@ -66,7 +68,10 @@ const getAddressStructruedSchema = Joi.object({
  */
 
  const getAddressStructured = async(req: Request, res: Response, next: NextFunction) => {
-    await getAddressStructruedSchema.validateAsync(req.query)
+    await getAddressStructruedSchema.validateAsync(req.query).catch((error)=>{
+        //console.log(error);
+        return res.status(400).send({error :'Invalid request query params' })
+    });
     const { street, city, country } = req.query;
     try{
 
@@ -77,15 +82,15 @@ const getAddressStructruedSchema = Joi.object({
         })
     }
     catch(error){
-        console.log(error);
+        //console.log(error);
         return res.status(400).send({error :'Address not found' })
     }
 }
 
 
 const getDistanceSchema = Joi.object({
-    origin: Joi.string().required(),
-    destination: Joi.string().required(),
+    origin: Joi.string().required().max(100),
+    destination: Joi.string().required().max(100),
 });
 
 
@@ -97,10 +102,10 @@ const getDistanceSchema = Joi.object({
  * @param {NextFunction} next 
  */
 const postDistance = async(req: Request, res: Response, next: NextFunction) => {
-    await getDistanceSchema.validateAsync(req.body)
+    await getDistanceSchema.validateAsync(req.body).catch((error)=>{
+        return res.status(400).send({error :'Invalid request query body' })
+    });
     const { origin, destination } = req.body;
-
-    console.log(origin);
     try{
         const originResult: AxiosResponse = await axios.get(
             `${nominatimURL}/search?format=json&q=${origin}`);
@@ -145,18 +150,20 @@ const getHisoricalAddressesSchema = Joi.object({
  * @param {NextFunction} next 
  */
 const getHistoricAddresses= async(req: Request, res: Response, next: NextFunction) =>{
-    console.log(req.body);
-    await getHisoricalAddressesSchema.validateAsync(req.query);
+    await getHisoricalAddressesSchema.validateAsync(req.query).catch((error)=>{
+        return res.status(400).send({error :'Invalid request query params' })
+    });
     const { pageNumber } = req.query;
     try{
-       const documents = await Distance.getDocuments(1);
+
+       const documents = await Distance.getDocuments(parseInt(pageNumber as string));
        console.log(documents)
        return res.status(200).json({
             message: documents
         });
     }
     catch(error){
-        console.log(error);
+        return res.status(500).send({error :'Something went wrong'})
     }
 }
 

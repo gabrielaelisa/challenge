@@ -8,6 +8,6 @@ describe('logic', function() {
         const b = { latitude: 33.8650, longitude: 151.2094 }
  
         const result =  calculateDistance(a, b) 
-        chai.expect(result).to.equal(714.5);
+        chai.expect(result).to.equal(714.5024);
     });
 });
