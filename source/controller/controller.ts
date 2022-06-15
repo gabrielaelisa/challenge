@@ -46,7 +46,6 @@ const getAddress = async(req: Request, res: Response, next: NextFunction) => {
         })
     }
     catch(error){
-        //console.log(error);
         return res.status(400).send({error :'Address not found' })
     }
    
@@ -69,7 +68,6 @@ const getAddressStructruedSchema = Joi.object({
 
  const getAddressStructured = async(req: Request, res: Response, next: NextFunction) => {
     await getAddressStructruedSchema.validateAsync(req.query).catch((error)=>{
-        //console.log(error);
         return res.status(400).send({error :'Invalid request query params' })
     });
     const { street, city, country } = req.query;
@@ -82,7 +80,6 @@ const getAddressStructruedSchema = Joi.object({
         })
     }
     catch(error){
-        //console.log(error);
         return res.status(400).send({error :'Address not found' })
     }
 }
@@ -157,7 +154,6 @@ const getHistoricAddresses= async(req: Request, res: Response, next: NextFunctio
     try{
 
        const documents = await Distance.getDocuments(parseInt(pageNumber as string));
-       console.log(documents)
        return res.status(200).json({
             message: documents
         });
