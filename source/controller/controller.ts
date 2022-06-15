@@ -104,12 +104,11 @@ const postDistance = async(req: Request, res: Response, next: NextFunction) => {
     });
     const { origin, destination } = req.body;
     try{
-        const originResult: AxiosResponse = await axios.get(
-            `${nominatimURL}/search?format=json&q=${origin}`);
+        const [originResult, destinationResult]  = await Promise.all([
+            axios.get(`${nominatimURL}/search?format=json&q=${origin}`),
+            axios.get(`${nominatimURL}/search?format=json&q=${destination}`)
+        ]);
 
-        const destinationResult: AxiosResponse = await axios.get(
-            `${nominatimURL}/search?format=json&q=${destination}`);
- 
         const originPoint = { 
             latitude: originResult.data[0].lat,
             longitude: originResult.data[0].lon,
